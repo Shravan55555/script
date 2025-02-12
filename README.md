@@ -5,7 +5,7 @@
 + **After that, Run this command below inside your rom project folder**
 ```bash
 # Change yourUsername with your github username
-wget https://raw.githubusercontent.com/yourUsername/build_script/main/jembod.sh
+wget https://raw.githubusercontent.com/Shravan55555/script/refs/heads/main/jembod.sh
 bash jembod.sh | tee hiya.txt
 ```
 
