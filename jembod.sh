@@ -1,20 +1,24 @@
 #!/bin/bash
 
+#Local TimeZone
+sudo rm -rf /etc/localtime
+sudo ln -s /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+
 #Export timezone
-export TZ=Asia/Jakarta
+export TZ=Asia/Kolkata
 
 #Export Configuration
-export romcuy=""
-export dcdnm=""
-export botuname=""
-export id_ch=""
-export id_owner=""
-export btoken=""
-export lmfests=""
-export blmfests=""
-export admfests=""
-export badmfests=""
-export jembod=""
+export romcuy="PixelOS"
+export dcdnm="RMX1901"
+export botuname="Shrav1_bot"
+export id_ch="-1001983626693"
+export id_owner="1983626693"
+export btoken="6268171294:AAGBIBXu3gEQeegjB99FUpLFJrDzp9zr22E"
+export lmfests=" https://github.com/shravansayz/local_manifests"
+export blmfests="pixel"
+export admfests="https://github.com/PixelOS-AOSP/manifest.git"
+export badmfests="fifteen"
+export jembod="mka bacon"
 
 #Notify with Telegram Function
 stm(){
@@ -38,11 +42,6 @@ stm "*_\=\=\=\=\=\= Crave Build Initiated \=\=\=\=\=_*%0A**>*Date: _$(date "+%A,
 # Remove some stuffs
 stm "*_\=\=\=\=\=\= Crave Build Running \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>◈ Removing Stuffs%0A>▢ Clone local\_manifests%0A>▢ Initializing Repo%0A>▢ Syncing Repositories%0A>▢ Adding Exports%0A>▢ Setup Build Environment%0A>▢ Building ROM \| Done*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @ZxhCarkecor_*%0A*_Don't Forget to [Donate](https://saweria.co/zxhcarkecor)_*" "$id_owner" > /dev/null
 rm -rf .repo/local_manifests
-rm -rf  vendor/xiaomi
-rm -rf  kernel/xiaomi
-rm -rf  device/xiaomi
-rm -rf  device/mediatek
-rm -rf  hardware/mediatek
 echo "===================================="
 echo "Removing stuffs done"
 echo "===================================="
@@ -70,7 +69,7 @@ echo "===================================="
 
 # Exports
 stm "*_\=\=\=\=\=\= Crave Build Running \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>▣ Clone local\_manifests%0A>▣ Initializing Repo%0A>▣ Syncing Repositories%0A>◈ Adding Exports%0A>▢ Setup Build Environment%0A>▢ Building ROM \| Done*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @ZxhCarkecor_*%0A*_Don't Forget to [Donate](https://saweria.co/zxhcarkecor)_*" "$id_owner" > /dev/null
-export BUILD_USERNAME=ctrhyz
+export BUILD_USERNAME=shravan
 export BUILD_HOSTNAME=crave
 echo "===================================="
 echo "Adding exports done"
