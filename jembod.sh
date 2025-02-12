@@ -10,10 +10,10 @@ export TZ=Asia/Kolkata
 #Export Configuration
 export romcuy="PixelOS"
 export dcdnm="RMX1901"
-export botuname="Shra1_bot"
+export botuname="cravebuild_bot"
 export id_ch="-1001983626693"
 export id_owner="1983626693"
-export btoken="6268171294:AAGBIBXu3gEQeegjB99FUpLFJrDzp9zr22E"
+export btoken="7602341657:AAF98-rFsXus2aSHRezf8HApeZvPkrgsjZM"
 export lmfests=" https://github.com/shravansayz/local_manifests"
 export blmfests="pixel"
 export admfests="https://github.com/PixelOS-AOSP/manifest.git"
