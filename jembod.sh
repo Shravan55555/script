@@ -10,7 +10,7 @@ export TZ=Asia/Kolkata
 #Export Configuration
 export romcuy="PixelOS"
 export dcdnm="RMX1901"
-export botuname="Shrav1_bot"
+export botuname="Shra1_bot"
 export id_ch="-1001983626693"
 export id_owner="1983626693"
 export btoken="6268171294:AAGBIBXu3gEQeegjB99FUpLFJrDzp9zr22E"
