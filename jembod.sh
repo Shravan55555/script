@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#Local TimeZone
-sudo rm -rf /etc/localtime
-sudo ln -s /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
 
 #Export timezone
 export TZ=Asia/Kolkata
@@ -12,7 +9,7 @@ export romcuy="PixelOS"
 export dcdnm="RMX1901"
 export botuname="cravebuild_bot"
 export id_ch="-1001983626693"
-export id_owner="1983626693"
+export id_owner="-1001983626693"
 export btoken="7602341657:AAF98-rFsXus2aSHRezf8HApeZvPkrgsjZM"
 export lmfests=" https://github.com/shravansayz/local_manifests"
 export blmfests="pixel"
