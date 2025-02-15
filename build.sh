@@ -11,10 +11,10 @@ export botuname="cravebuild_bot"
 export id_ch="-1001983626693"
 export id_owner="-1001983626693"
 export btoken="7602341657:AAF98-rFsXus2aSHRezf8HApeZvPkrgsjZM"
-export lmfests=" https://github.com/shravansayz/local_manifests"
-export blmfests="pixel"
-export admfests="https://github.com/PixelOS-AOSP/manifest.git"
-export badmfests="fifteen"
+export lmfests="https://github.com/shravansayz/local_manifests"
+export blmfests="pixelage"
+export admfests="https://github.com/ProjectPixelage/android_manifest"
+export badmfests="15"
 export jembod="mka bacon"
 
 #Notify with Telegram Function
@@ -85,7 +85,7 @@ echo "===================================="
 echo "Building Rom..."
 echo "===================================="
 # brunch $(echo $dcdnm)-userdebug || brunch $(echo $dcdnm) || breakfast $(echo $dcdnm)-userdebug || lunch afterlife_$(echo $dcdnm)-ap2a-userdebug && mka bacon || breakfast $(echo $dcdnm)
-breakfast $(echo $dcdnm) userdebug
+lunch aosp_$(echo $dcdnm)-ap4a-userdebug
 $(echo $jembod)
 stm "*_\=\=\=\=\= Crave Build Finished \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>▣ Clone local\_manifests%0A>▣ Initializing Repo%0A>▣ Syncing Repositories%0A>▣ Adding Exports%0A>▣ Setup Build Environment%0A>▣ Building ROM*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_owner" > /dev/null
 stm "*_\=\=\=\=\= Crave Build Finished \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>▣ Clone local\_manifests%0A>▣ Initializing Repo%0A>▣ Syncing Repositories%0A>▣ Adding Exports%0A>▣ Setup Build Environment%0A>▣ Building ROM*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>*See Log [Here]($(echo $botuname).t.me) \(_Only Owner_\)*%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_ch" > /dev/null
