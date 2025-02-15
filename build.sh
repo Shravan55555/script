@@ -5,7 +5,7 @@
 export TZ=Asia/Kolkata
 
 #Export Configuration
-export romcuy="PixelOS"
+export romcuy="Pixelage"
 export dcdnm="RMX1901"
 export botuname="cravebuild_bot"
 export id_ch="-1001983626693"
