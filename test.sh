@@ -85,6 +85,16 @@ update_build_status() {
     fi
 }
 
+# Send notification function
+send_notification() {
+    local message="$1"
+    curl -s -X POST "https://api.telegram.org/bot${btoken}/sendMessage" \
+        -d "chat_id=${id_ch}" \
+        -d "text=${message}" \
+        -d "parse_mode=MarkdownV2" \
+        -d "disable_web_page_preview=true"
+}
+
 # Send Log with Telegram
 stf() {
     local caption="$1"
@@ -145,14 +155,42 @@ print_section "CLEANING ENVIRONMENT" "${CYAN}"
 print_section "CLONING REPOSITORIES" "${YELLOW}"
 {
     log_info "Cloning local_manifests..."
-    git clone $(echo $lmfests) -b $(echo $blmfests) .repo/local_manifests || log_error "Failed to clone local_manifests"
+    send_notification "🔄 *Cloning local\_manifests*%0A📦 Repository: \`${lmfests}\`%0A🔖 Branch: \`${blmfests}\`"
+    
+    if git clone $(echo $lmfests) -b $(echo $blmfests) .repo/local_manifests; then
+        log_success "Successfully cloned local_manifests"
+        send_notification "✅ *Local manifests cloned successfully\!*"
+    else
+        log_error "Failed to clone local_manifests"
+        send_notification "❌ *Failed to clone local\_manifests*"
+        exit 1
+    fi
+    
     update_build_status "📥 Cloning Repositories" ""
     
     log_info "Initializing repo..."
-    repo init -u $(echo $admfests) -b $(echo $badmfests) --git-lfs || log_error "Failed to initialize repo"
+    send_notification "🔄 *Initializing repository*%0A📦 Source: \`${admfests}\`%0A🔖 Branch: \`${badmfests}\`"
+    
+    if repo init -u $(echo $admfests) -b $(echo $badmfests) --git-lfs; then
+        log_success "Successfully initialized repo"
+        send_notification "✅ *Repository initialized successfully\!*"
+    else
+        log_error "Failed to initialize repo"
+        send_notification "❌ *Failed to initialize repository*"
+        exit 1
+    fi
     
     log_info "Syncing repositories..."
-    /opt/crave/resync.sh || repo sync || log_error "Failed to sync repositories"
+    send_notification "🔄 *Starting repository sync*"
+    
+    if /opt/crave/resync.sh || repo sync; then
+        log_success "Successfully synced repositories"
+        send_notification "✅ *Repository sync completed successfully\!*"
+    else
+        log_error "Failed to sync repositories"
+        send_notification "❌ *Failed to sync repositories*"
+        exit 1
+    fi
 }
 
 # Setup build environment
