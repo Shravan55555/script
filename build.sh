@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 #Export timezone
 export TZ=Asia/Kolkata
 
@@ -18,82 +17,81 @@ export badmfests="15"
 export jembod="mka bacon"
 
 #Notify with Telegram Function
-stm(){
+stm() {
     local message="$1"
     local cid="$2"
     curl -s -X POST https://api.telegram.org/bot$btoken/sendMessage -d chat_id=$cid -d text="$message" -d disable_web_page_preview="True" -d parse_mode="MarkdownV2"
 }
 
-#Send Log with Telegram
-stf(){
-    local caption="$1"
-    local cid="$2"
-    curl -s -L -F document=@"$(pwd)/hiya.txt" -F parse_mode="MarkdownV2" -F caption="$caption" -X POST https://api.telegram.org/bot$btoken/sendDocument -F chat_id=$cid
+#Send File with Telegram
+stf() {
+    local file="$1"
+    local caption="$2"
+    local cid="$3"
+    curl -s -L -F document=@"$file" -F parse_mode="MarkdownV2" -F caption="$caption" -X POST https://api.telegram.org/bot$btoken/sendDocument -F chat_id=$cid
 }
 
+#Create Build Log
+build_log="build_$(date +%Y%m%d_%H%M%S).log"
+error_log="error_$(date +%Y%m%d_%H%M%S).log"
+
 #TG Start
-echo "================= Start ================="
-stm "*_\=\=\=\=\=\= Crave Build Initiated \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>*See Progress [Here]($(echo $botuname).t.me) \(_Only Owner_\)*%0A%0A*_Script By @ZxhCarkecor_*%0A*_Don't Forget to [Donate](https://saweria.co/zxhcarkecor)_*" "$id_owner" > /dev/null
-stm "*_\=\=\=\=\=\= Crave Build Initiated \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>*See Progress [Here]($(echo $botuname).t.me) \(_Only Owner_\)*%0A%0A*_Script By @ZxhCarkecor_*%0A*_Don't Forget to [Donate](https://saweria.co/zxhcarkecor)_*" "$id_ch" > /dev/null
+echo "🚀 Build Process Started"
+stm "🔥 *ROM Build Initiated* 🔥%0A%0A📅 *Date:* _$(date "+%A, %d %B %Y")_%0A⏰ *Time:* _$(date "+%H:%M:%S %Z")_%0A📱 *ROM:* _${romcuy}_%0A📲 *Device:* _${dcdnm}_%0A%0A👨‍💻 *Builder:* @Shravansayz%0A💝 *Support:* [Donate](https://saweria.co/shravansayz)" "$id_ch"
 
 # Remove some stuffs
-stm "*_\=\=\=\=\=\= Crave Build Running \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>◈ Removing Stuffs%0A>▢ Clone local\_manifests%0A>▢ Initializing Repo%0A>▢ Syncing Repositories%0A>▢ Adding Exports%0A>▢ Setup Build Environment%0A>▢ Building ROM \| Done*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_owner" > /dev/null
+echo "🗑️ Cleaning workspace..."
 rm -rf .repo/local_manifests
-echo "===================================="
-echo "Removing stuffs done"
-echo "===================================="
+stm "🔄 *Build Progress Update*%0A%0A🗑️ Cleaning workspace%0A📥 Cloning manifests \.\.\." "$id_ch"
 
 # Clone local_manifests repository
-stm "*_\=\=\=\=\=\= Crave Build Running \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>◈ Clone local\_manifests%0A>▢ Initializing Repo%0A>▢ Syncing Repositories%0A>▢ Adding Exports%0A>▢ Setup Build Environment%0A>▢ Building ROM \| Done*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_owner" > /dev/null
-git clone $(echo $lmfests) -b $(echo $blmfests) .repo/local_manifests
-echo "===================================="
-echo "Cloning local_manifests done"
-echo "===================================="
+echo "📥 Cloning local manifests..."
+git clone $lmfests -b $blmfests .repo/local_manifests 2>>$error_log
+stm "🔄 *Build Progress Update*%0A%0A✅ Workspace cleaned%0A✅ Manifests cloned%0A🔄 Initializing repo \.\.\." "$id_ch"
 
 # Initialize repo
-stm "*_\=\=\=\=\=\= Crave Build Running \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>▣ Clone local\_manifests%0A>◈ Initializing Repo%0A>▢ Syncing Repositories%0A>▢ Adding Exports%0A>▢ Setup Build Environment%0A>▢ Building ROM \| Done*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_owner" > /dev/null
-repo init -u $(echo $admfests) -b $(echo $badmfests) --git-lfs
-echo "===================================="
-echo "Initializing repo done"
-echo "===================================="
+echo "🔄 Initializing repository..."
+repo init -u $admfests -b $badmfests --git-lfs 2>>$error_log
+stm "🔄 *Build Progress Update*%0A%0A✅ Workspace cleaned%0A✅ Manifests cloned%0A✅ Repo initialized%0A🔄 Syncing repositories \.\.\." "$id_ch"
 
 # Sync the repositories
-stm "*_\=\=\=\=\=\= Crave Build Running \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>▣ Clone local\_manifests%0A>▣ Initializing Repo%0A>◈ Syncing Repositories%0A>▢ Adding Exports%0A>▢ Setup Build Environment%0A>▢ Building ROM \| Done*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_owner" > /dev/null
-/opt/crave/resync.sh || repo sync
-echo "===================================="
-echo "Syncing the repositories done"
-echo "===================================="
+echo "🔄 Syncing repositories..."
+/opt/crave/resync.sh 2>>$error_log || repo sync 2>>$error_log
+stm "🔄 *Build Progress Update*%0A%0A✅ Workspace cleaned%0A✅ Manifests cloned%0A✅ Repo initialized%0A✅ Repositories synced%0A⚙️ Setting up environment \.\.\." "$id_ch"
 
 # Exports
-stm "*_\=\=\=\=\=\= Crave Build Running \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>▣ Clone local\_manifests%0A>▣ Initializing Repo%0A>▣ Syncing Repositories%0A>◈ Adding Exports%0A>▢ Setup Build Environment%0A>▢ Building ROM \| Done*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_owner" > /dev/null
+echo "⚙️ Setting up build environment..."
 export BUILD_USERNAME=shravan
 export BUILD_HOSTNAME=crave
-echo "===================================="
-echo "Adding exports done"
-echo "===================================="
 
-# Set up build environment
-stm "*_\=\=\=\=\=\= Crave Build Running \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>▣ Clone local\_manifests%0A>▣ Initializing Repo%0A>▣ Syncing Repositories%0A>▣ Adding Exports%0A>◈ Setup Build Environment%0A>▢ Building ROM \| Done*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_owner" > /dev/null
-source build/envsetup.sh
-echo "===================================="
-echo "Setting up build environment done"
-echo "===================================="
+# Setup build environment
+source build/envsetup.sh 2>>$error_log
+stm "🔄 *Build Progress Update*%0A%0A✅ Workspace cleaned%0A✅ Manifests cloned%0A✅ Repo initialized%0A✅ Repositories synced%0A✅ Environment setup%0A🏗️ Starting ROM build \.\.\." "$id_ch"
 
-#Building Rom
-stm "*_\=\=\=\=\=\= Crave Build Running \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>▣ Clone local\_manifests%0A>▣ Initializing Repo%0A>▣ Syncing Repositories%0A>▣ Adding Exports%0A>▣ Setup Build Environment%0A>◈ Building ROM \| Done*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_owner" > /dev/null
-echo "===================================="
-echo "Building Rom..."
-echo "===================================="
-# brunch $(echo $dcdnm)-userdebug || brunch $(echo $dcdnm) || breakfast $(echo $dcdnm)-userdebug || lunch afterlife_$(echo $dcdnm)-ap2a-userdebug && mka bacon || breakfast $(echo $dcdnm)
-lunch pixelage_$(echo $dcdnm)-ap4a-user
-$(echo $jembod)
-stm "*_\=\=\=\=\= Crave Build Finished \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>▣ Clone local\_manifests%0A>▣ Initializing Repo%0A>▣ Syncing Repositories%0A>▣ Adding Exports%0A>▣ Setup Build Environment%0A>▣ Building ROM*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>_Log Will Send After Build Finished_%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_owner" > /dev/null
-stm "*_\=\=\=\=\= Crave Build Finished \=\=\=\=\=_*%0A**>*Date: _$(date "+%A, %d %B %Y")_*%0A>*Time: _$(date "+%H:%M:%S %Z")_*%0A>*ROM: _$(echo $romcuy)_*%0A>*Device: _$(echo $dcdnm)_*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A**>*\=\=\=\=\=\=\=\= Progress \=\=\=\=\=\=\=\=%0A>▣ Script Executed%0A>▣ Removing Stuffs%0A>▣ Clone local\_manifests%0A>▣ Initializing Repo%0A>▣ Syncing Repositories%0A>▣ Adding Exports%0A>▣ Setup Build Environment%0A>▣ Building ROM*||%0A*_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=_*%0A>*See Log [Here]($(echo $botuname).t.me) \(_Only Owner_\)*%0A%0A*_Script By @Shravansayz_*%0A*_Don't Forget to [Donate](https://saweria.co/shravansayz)_*" "$id_ch" > /dev/null
+# Building ROM
+echo "🏗️ Building ROM..."
+{
+    lunch pixelage_${dcdnm}-ap4a-user
+    $jembod
+} 2>&1 | tee -a $build_log
 
-#Send Log
-echo "================= Done ================="
-stf "*Mana Log nya\?
-Ini Log nya\!
+# Check build status
+if [ ${PIPESTATUS[0]} -eq 0 ]; then
+    build_status="✅ Build Completed Successfully!"
+else
+    build_status="❌ Build Failed!"
+fi
 
-Where The Log\?
-Here NIGGA\!*" "$id_owner" > /dev/null
+# Send build completion notification
+stm "🏁 *Build Finished* 🏁%0A%0A📱 *Device:* _${dcdnm}_%0A📊 *Status:* _${build_status}_%0A⏱️ *Duration:* _$(date -u -d @$SECONDS +%H:%M:%S)_%0A%0A📋 *Build logs will be sent shortly*" "$id_ch"
+
+# Send logs
+if [ -f "$build_log" ]; then
+    stf "$build_log" "📊 *Build Log*" "$id_ch"
+fi
+
+if [ -f "$error_log" ]; then
+    stf "$error_log" "⚠️ *Error Log*" "$id_ch"
+fi
+
+echo "🏁 Build process completed!"
