@@ -209,11 +209,45 @@ print_section "STARTING ROM BUILD" "${PURPLE}"
 # Kill progress monitoring
 kill $monitor_pid
 
+# Add function to upload JSON file
+upload_json() {
+    local json_file=$(find "$OUT" -name "*${dcdnm}*.json" -type f)
+    
+    if [ -n "$json_file" ]; then
+        log_info "Found JSON file: ${json_file}"
+        
+        # Format JSON content for Telegram message
+        local json_content=$(cat "$json_file" | jq -r tostring | sed 's/[&<>]/\\&/g' | sed 's/\"/\\"/g')
+        
+        # Create message with JSON info
+        local message="📋 *Build Information JSON* 📋%0A%0A"
+        message+="📱 *Device:* \`${dcdnm}\`%0A"
+        message+="📄 *Filename:* \`$(basename ${json_file})\`%0A"
+        message+="📦 *Size:* \`$(du -h ${json_file} | cut -f1)\`%0A%0A"
+        
+        # Send JSON file
+        curl -s -X POST "https://api.telegram.org/bot${btoken}/sendDocument" \
+            -F "chat_id=${id_ch}" \
+            -F "document=@${json_file}" \
+            -F "caption=${message}" \
+            -F "parse_mode=MarkdownV2"
+        
+        log_success "Successfully uploaded JSON file"
+    else
+        log_error "No JSON file found for ${dcdnm}"
+    fi
+}
+
+# Add to the build completion section (before sending logs):
 # Check build status
 if [ -f "out/target/product/${dcdnm}/*.zip" ]; then
     print_section "BUILD COMPLETED SUCCESSFULLY" "${GREEN}"
     log_success "Build completed successfully"
     update_build_status "✅ Build Completed Successfully" ""
+    
+    # Upload JSON file
+    print_section "UPLOADING BUILD INFORMATION" "${BLUE}"
+    upload_json
 else
     print_section "BUILD FAILED" "${RED}"
     log_error "Build failed - no output file found"
