@@ -53,41 +53,34 @@ print_section() {
     echo -e "\n${color}${BOLD}✧ ${title} ✧${NC}\n"
 }
 
-# Updated Telegram message function with message editing
-update_build_status() {
-    local status="$1"
-    local progress="$2"
-    local current_time=$(date "+%H:%M:%S %Z")
-    
-    local message="🛠️ *CRAVE BUILD STATUS* 🛠️%0A%0A"
-    message+="📅 *Date:* \`$(date "+%A, %d %B %Y")\`%0A"
-    message+="⏰ *Time:* \`${current_time}\`%0A"
-    message+="📱 *ROM:* \`${romcuy}\`%0A"
-    message+="📲 *Device:* \`${dcdnm}\`%0A%0A"
-    message+="*Current Status:* ${status}%0A"
-    message+="${progress}"
-
-    if [ -z "$build_msg_id" ]; then
-        # Send initial message and store message ID
-        build_msg_id=$(curl -s -X POST "https://api.telegram.org/bot${btoken}/sendMessage" \
-            -d "chat_id=${id_ch}" \
-            -d "text=${message}" \
-            -d "parse_mode=MarkdownV2" \
-            -d "disable_web_page_preview=true" | jq -r '.result.message_id')
+# Function to get repository size
+get_repo_size() {
+    local repo_url="$1"
+    local size=$(curl -sI "$repo_url" | grep -i content-length | awk '{print $2}' | tr -d '\r')
+    if [ -n "$size" ]; then
+        echo "$(($size / 1024 / 1024)) MB"
     else
-        # Update existing message
-        curl -s -X POST "https://api.telegram.org/bot${btoken}/editMessageText" \
-            -d "chat_id=${id_ch}" \
-            -d "message_id=${build_msg_id}" \
-            -d "text=${message}" \
-            -d "parse_mode=MarkdownV2" \
-            -d "disable_web_page_preview=true"
+        echo "Size unknown"
     fi
 }
 
-# Send notification function
-send_notification() {
-    local message="$1"
+# Function to send cloning status message
+send_clone_status() {
+    local message="🔄 *REPOSITORY CLONING STATUS* 🔄%0A%0A"
+    message+="📅 *Date:* \`$(date "+%A, %d %B %Y")\`%0A"
+    message+="⏰ *Time:* \`$(date "+%H:%M:%S %Z")\`%0A"
+    message+="📱 *ROM:* \`${romcuy}\`%0A"
+    message+="📲 *Device:* \`${dcdnm}\`%0A%0A"
+    message+="*Repository Status:*%0A%0A"
+    
+    # Add local manifests status
+    local_size=$(get_repo_size "$lmfests")
+    message+="1️⃣ *Local Manifests*%0A"
+    message+="📦 Repo: \`${lmfests}\`%0A"
+    message+="🔖 Branch: \`${blmfests}\`%0A"
+    message+="📊 Size: \`${local_size}\`%0A"
+    message+="⏳ Status: Cloning\.\.\.%0A%0A"
+    
     curl -s -X POST "https://api.telegram.org/bot${btoken}/sendMessage" \
         -d "chat_id=${id_ch}" \
         -d "text=${message}" \
@@ -95,105 +88,104 @@ send_notification() {
         -d "disable_web_page_preview=true"
 }
 
-# Send Log with Telegram
-stf() {
-    local caption="$1"
-    local cid="$2"
-    local log_file="${3:-hiya.txt}"
-    curl -s -L -F document=@"$(pwd)/${log_file}" -F parse_mode="MarkdownV2" -F caption="$caption" -X POST https://api.telegram.org/bot$btoken/sendDocument -F chat_id=$cid
-}
-
-# Monitor build progress
-monitor_build_progress() {
-    local start_time=$(date +%s)
-    local last_size=0
-    local current_size=0
+# Function to update clone status
+update_clone_status() {
+    local step="$1"
+    local status="$2"
+    local message="🔄 *REPOSITORY CLONING STATUS* 🔄%0A%0A"
+    message+="📅 *Date:* \`$(date "+%A, %d %B %Y")\`%0A"
+    message+="⏰ *Time:* \`$(date "+%H:%M:%S %Z")\`%0A"
+    message+="📱 *ROM:* \`${romcuy}\`%0A"
+    message+="📲 *Device:* \`${dcdnm}\`%0A%0A"
+    message+="*Repository Status:*%0A%0A"
     
-    while true; do
-        if [ -d "out/target/product/${dcdnm}" ]; then
-            current_size=$(du -s "out/target/product/${dcdnm}" | cut -f1)
-            local elapsed=$(($(date +%s) - start_time))
-            local hours=$((elapsed / 3600))
-            local minutes=$(((elapsed % 3600) / 60))
-            local seconds=$((elapsed % 60))
-            
-            # Calculate build speed
-            local size_diff=$((current_size - last_size))
-            local speed=$((size_diff / 60)) # MB per minute
-            
-            local progress="⏱️ *Elapsed Time:* \`${hours}h ${minutes}m ${seconds}s\`%0A"
-            progress+="📊 *Build Size:* \`$((current_size / 1024)) MB\`%0A"
-            [ $speed -gt 0 ] && progress+="⚡ *Build Speed:* \`${speed} MB/min\`"
-            
-            update_build_status "🏗️ Building\.\.\." "$progress"
-            last_size=$current_size
-        fi
-        sleep 60
-    done
+    local_size=$(get_repo_size "$lmfests")
+    message+="1️⃣ *Local Manifests*%0A"
+    message+="📦 Repo: \`${lmfests}\`%0A"
+    message+="🔖 Branch: \`${blmfests}\`%0A"
+    message+="📊 Size: \`${local_size}\`%0A"
+    
+    case "$step" in
+        "local_manifest")
+            message+="✅ Status: Cloned Successfully%0A%0A"
+            ;;
+        "repo_init")
+            message+="✅ Status: Cloned Successfully%0A%0A"
+            message+="2️⃣ *Main Repository*%0A"
+            message+="📦 Repo: \`${admfests}\`%0A"
+            message+="🔖 Branch: \`${badmfests}\`%0A"
+            if [ "$status" = "started" ]; then
+                message+="⏳ Status: Initializing\.\.\.%0A%0A"
+            else
+                message+="✅ Status: Initialized Successfully%0A%0A"
+            fi
+            ;;
+        "repo_sync")
+            message+="✅ Status: Cloned Successfully%0A%0A"
+            message+="2️⃣ *Main Repository*%0A"
+            message+="📦 Repo: \`${admfests}\`%0A"
+            message+="🔖 Branch: \`${badmfests}\`%0A"
+            message+="✅ Status: Initialized Successfully%0A"
+            if [ "$status" = "started" ]; then
+                message+="⏳ Status: Syncing Repositories\.\.\.%0A"
+                message+="📊 Total Size: \`Calculating\.\.\.\`%0A%0A"
+            else
+                local sync_size=$(du -sh .repo | cut -f1)
+                message+="✅ Status: Sync Completed%0A"
+                message+="📊 Total Size: \`${sync_size}\`%0A%0A"
+            fi
+            ;;
+    esac
+
+    curl -s -X POST "https://api.telegram.org/bot${btoken}/sendMessage" \
+        -d "chat_id=${id_ch}" \
+        -d "text=${message}" \
+        -d "parse_mode=MarkdownV2" \
+        -d "disable_web_page_preview=true"
 }
 
-# Start Build Process
-print_section "CRAVE BUILD STARTING" "${PURPLE}"
-log_info "Build process initiated"
-
-# Initial status update
-update_build_status "🌟 Initializing Build" ""
-
-# Start progress monitoring in background
-monitor_build_progress &
-monitor_pid=$!
-
-# Clean previous build
-print_section "CLEANING ENVIRONMENT" "${CYAN}"
-{
-    log_info "Cleaning previous build artifacts..."
-    rm -rf .repo/local_manifests || log_error "Failed to remove local_manifests"
-    update_build_status "🧹 Cleaning Environment" ""
-}
-
-# Clone local_manifests
+# Clone repositories
 print_section "CLONING REPOSITORIES" "${YELLOW}"
 {
+    # Start cloning local_manifests
     log_info "Cloning local_manifests..."
-    send_notification "🔄 *Cloning local\_manifests*%0A📦 Repository: \`${lmfests}\`%0A🔖 Branch: \`${blmfests}\`"
+    send_clone_status
     
     if git clone $(echo $lmfests) -b $(echo $blmfests) .repo/local_manifests; then
         log_success "Successfully cloned local_manifests"
-        send_notification "✅ *Local manifests cloned successfully\!*"
+        update_clone_status "local_manifest" "success"
     else
         log_error "Failed to clone local_manifests"
-        send_notification "❌ *Failed to clone local\_manifests*"
         exit 1
     fi
     
-    update_build_status "📥 Cloning Repositories" ""
-    
+    # Initialize repo
     log_info "Initializing repo..."
-    send_notification "🔄 *Initializing repository*%0A📦 Source: \`${admfests}\`%0A🔖 Branch: \`${badmfests}\`"
+    update_clone_status "repo_init" "started"
     
     if repo init -u $(echo $admfests) -b $(echo $badmfests) --git-lfs; then
         log_success "Successfully initialized repo"
-        send_notification "✅ *Repository initialized successfully\!*"
+        update_clone_status "repo_init" "success"
     else
         log_error "Failed to initialize repo"
-        send_notification "❌ *Failed to initialize repository*"
         exit 1
     fi
     
+    # Sync repositories
     log_info "Syncing repositories..."
-    send_notification "🔄 *Starting repository sync*"
+    update_clone_status "repo_sync" "started"
     
     if /opt/crave/resync.sh || repo sync; then
         log_success "Successfully synced repositories"
-        send_notification "✅ *Repository sync completed successfully\!*"
+        update_clone_status "repo_sync" "success"
     else
         log_error "Failed to sync repositories"
-        send_notification "❌ *Failed to sync repositories*"
         exit 1
     fi
 }
 
 # Setup build environment
+# Rest of your build script remains the same...
 print_section "SETTING UP BUILD ENVIRONMENT" "${GREEN}"
 {
     log_info "Configuring build environment..."
@@ -209,7 +201,7 @@ print_section "STARTING ROM BUILD" "${PURPLE}"
     log_info "Configuring build target..."
     lunch pixelage_$(echo $dcdnm)-ap4a-user || log_error "Failed to configure lunch"
     update_build_status "🏗️ Starting Build Process" ""
-    
+
     log_info "Starting build process..."
     $(echo $jembod) || log_error "Build failed"
 }
